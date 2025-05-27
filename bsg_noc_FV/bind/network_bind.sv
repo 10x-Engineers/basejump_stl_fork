@@ -1,4 +1,5 @@
-bind design_top mesh2x2_sva #(
+
+bind design_top mesh4x4_sva #(
   .DATA_WIDTH_P(DATA_WIDTH_P),
   .MESH_EDGE_P (MESH_EDGE_P),
   .medge_lp(medge_lp), 
