@@ -1,5 +1,5 @@
 `define DATA_WIDTH_P 4
-`define MESH_EDGE_P  1 
+`define MESH_EDGE_P 2 
 // import enum Dirs for directions
 import bsg_noc_pkg::Dirs
        , bsg_noc_pkg::P  // proc (processor core)
@@ -11,7 +11,7 @@ import bsg_noc_pkg::Dirs
 module design_top
 #(
   parameter DATA_WIDTH_P= 4,
-  parameter MESH_EDGE_P = 1,
+  parameter MESH_EDGE_P = 2,
   parameter medge_lp    = 2**(`MESH_EDGE_P),         // edge length of the mesh 
   parameter msize_lp    = (medge_lp)**2,
   parameter dims_lp     = 2,
@@ -98,10 +98,10 @@ module design_top
   /*********************************************/
   
   // vertical fifos => data flow N to S or vice-versa
-  for (i = 0; i < (medge_lp)*(medge_lp-1); i = i + 1) begin
+  for (i = 0; i < (medge_lp)*(medge_lp-1); i = i + 1) begin : fifos_vertical
       bsg_fifo_1r1w_small #(
         .width_p(width_lp),
-        .els_p(msize_lp),
+        .els_p(2),
         .ready_THEN_valid_p(0)
       ) fifo_up (
         .clk_i(clk),
@@ -116,7 +116,7 @@ module design_top
 
       bsg_fifo_1r1w_small #(
         .width_p(width_lp),
-        .els_p(msize_lp),
+        .els_p(2),
         .ready_THEN_valid_p(0)
       ) fifo_down (
         .clk_i(clk),
@@ -132,11 +132,11 @@ module design_top
 
   // horizontal fifos => data flow E to W or vice versa
 
-    for (i = 0; i < medge_lp; i = i + 1) begin
-      for (j = 0; j < medge_lp-1; j = j + 1) begin
+    for (i = 0; i < medge_lp; i = i + 1) begin  : fifos_horizontal
+      for (j = 0; j < medge_lp-1; j = j + 1) begin : right_left
         bsg_fifo_1r1w_small #(
           .width_p(width_lp),
-          .els_p(msize_lp),
+          .els_p(2),
           .ready_THEN_valid_p(0)
         ) fifo_right (
           .clk_i(clk),
@@ -151,7 +151,7 @@ module design_top
 
         bsg_fifo_1r1w_small #(
           .width_p(width_lp),
-          .els_p(msize_lp),
+          .els_p(2),
           .ready_THEN_valid_p(0)
         ) fifo_left (
           .clk_i(clk),
